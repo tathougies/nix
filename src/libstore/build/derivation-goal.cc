@@ -652,6 +652,7 @@ void DerivationGoal::tryToBuild()
                    EOF from the hook. */
                 actLock.reset();
                 result.startTime = time(0); // inexact
+                startTime = std::chrono::steady_clock::now();
                 state = &DerivationGoal::buildDone;
                 started();
                 return;
@@ -1001,6 +1002,16 @@ void DerivationGoal::buildDone()
     }
 
     done(BuildResult::Built);
+
+    auto stopTime = std::chrono::steady_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stopTime - startTime).count() / 1000.0;
+
+    // FIXME: associate with activity 'act'.
+    notice(ANSI_BOLD ANSI_GREEN "Built" ANSI_NORMAL " '%s' in %s%.1f s" ANSI_NORMAL ".",
+        worker.store.printStorePath(drvPath),
+        duration > 0.5 ? ANSI_BOLD : ANSI_NORMAL,
+        duration);
 }
 
 void DerivationGoal::resolvedFinished() {
@@ -1577,6 +1588,7 @@ void DerivationGoal::startBuilder()
         throw SysError("putting pseudoterminal into raw mode");
 
     result.startTime = time(0);
+    startTime = std::chrono::steady_clock::now();
 
     /* Fork a child to build the package. */
     ProcessOptions options;
