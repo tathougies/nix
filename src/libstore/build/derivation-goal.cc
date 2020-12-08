@@ -3406,8 +3406,7 @@ void DerivationGoal::registerOutputs()
         drvPathResolved = writeDerivation(worker.store, drv2);
     }
 
-    if (settings.isExperimentalFeatureEnabled("ca-derivations") &&
-        (useDerivation || isCaFloating))
+    if (settings.isExperimentalFeatureEnabled("ca-derivations"))
         for (auto& [outputName, newInfo] : infos)
             worker.store.registerDrvOutput(Realisation{
                 .id = DrvOutput{drvPathResolved, outputName},
