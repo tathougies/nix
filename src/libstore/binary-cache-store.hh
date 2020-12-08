@@ -33,6 +33,9 @@ private:
 
 protected:
 
+    // The prefix under which realisation infos will be stored
+    const std::string realisationsPrefix = "/realisations";
+
     BinaryCacheStore(const Params & params);
 
 public:
